@@ -1,17 +1,7 @@
 
 
-function create_difficulty() {
-    const max_cards = [3, 4, 6, 7];
-    const difficulty = [
-        "beginner",
-        "advanced",
-        "challenge",
-        "expert",
-    ]     
-}
 
-
-function main() {
+function init() {
     const screen = document.getElementById("screen");
     const difficulty_container = document.getElementById("difficulty_container");
     difficulty_container.style.height = screen.offsetHeight / 2 + "px";
@@ -23,7 +13,21 @@ function main() {
     }, .5);
 
 
+    function create_difficulty() {
+        const max_cards = [3, 4, 6, 7];
+        const difficulty = [
+            "beginner",
+            "advanced",
+            "challenge",
+            "expert",
+        ]     
+    }
 
+}
+
+
+function main() {
+    
 }
 
 
