@@ -1,35 +1,6 @@
 
 
 
-function init() {
-    const screen = document.getElementById("screen");
-    const difficulty_container = document.getElementById("difficulty_container");
-    difficulty_container.style.height = screen.offsetHeight / 2 + "px";
-    difficulty_container.style.width = screen.offsetWidth / 2 + "px";
-
-    setTimeout(() => {
-        difficulty_container.style.marginTop = screen.offsetHeight / 2 - difficulty_container.offsetHeight / 2  + "px";
-        difficulty_container.style.marginLeft = screen.offsetWidth / 2 - difficulty_container.offsetWidth / 2 + "px";
-    }, .5);
-
-
-    function create_difficulty() {
-        const max_cards = [3, 4, 6, 7];
-        const difficulty = [
-            "beginner",
-            "advanced",
-            "challenge",
-            "expert",
-        ]     
-    }
-
-}
-
-
-function main() {
-    
-}
-
 
 
 window.onload = function() {
@@ -48,32 +19,34 @@ window.onload = function() {
     screen.append(difficulty_container);
     
     const difficulty_childs = [];
-    const cards = [3, 4, 6, 7];
     const difficulty = [
-        "beginner",
-        "advanced",
-        "challenge",
-        "expert",
+        ["beginner", 4, 3],
+        ["advanced", 5, 4],
+        ["challenge", 6, 5],
     ]
+
     create_difficultys(); 
 
     function create_difficultys() {
         for (let i = 0; i < difficulty.length; i++) {
             const input = document.createElement("button");
             input.setAttribute("class", "difficulty");
-            input.id = difficulty[i];
+            input.id = difficulty[i][0];
             input.setAttribute("type", "text");
             input.textContent = input.id;
             input.style.height = difficulty_container.offsetHeight / difficulty.length + "px";
             input.style.width = difficulty_container.offsetWidth + "px";
             
             difficulty_childs[i] = input
-            input.onclick = function() {flip_screen(cards[i]);};
             difficulty_container.append(input);
+            
+            input.onclick = function() {
+                flip_screen(difficulty[i][1], difficulty[i][2]);
+            };
         }
     };
     
-    function flip_screen(idx) {
+    function flip_screen(colum, row) {
         screen.style.transform = "rotateY(90deg)";
         setTimeout(() => {
             for (let i = 0; i < difficulty_childs.length; i++) {
@@ -81,7 +54,11 @@ window.onload = function() {
             }
 
             screen.style.transform = "rotateY(45deg)"
-            create_game(idx); 
+            create_game(
+                {
+                    colum: colum,
+                    row: row,
+                }); 
         }, 1000);
     }
 
@@ -97,47 +74,54 @@ window.onload = function() {
         
         card.onclick = function() {
         card.style.transform = "rotateY(90deg)";
-            setTimeout(() => {card.style.transform = "rotateY(0deg)";}, 500);
+        setTimeout(() => {card.style.transform = "rotateY(0deg)"}, 500);
+        setTimeout(() => {card.src = data.front}, 500);
         };
 
         return card;
     }
- 
-    // function set_sprites(max_cards) {
-    //     const assets = "../assets/";
-    //     const sprites = [];
-    //     const game_sprites = [];
-
-    //     for (let i = 1; i < 12; i++) {
-    //         sprites[i - 1] = assets + "factorio_" + i.toString() + ".jpg";
-    //     }
 
 
-    //     for (let id = 0; id < max_cards; id++) {
-    //         const rnd_idx = Math.floor(Math.random() * sprites.length);
-    //         // alert(rnd_idx + sprites.length);
-    //     }
+    function set_card_pictures(max_cards) {
+        let game_cards = []; 
+        let idx = 0;
 
-    //     return game_sprites;
-    // }
+        for (let i = 0; i < 2; i++) {
+            for (let x = 0; x < max_cards; x++) {
+                game_cards[idx] = "../assets/factorio_" + x.toString() + ".jpg";
+                idx++
+            };
+        };
 
-    const all_cards = [];
+        game_cards.sort(() => Math.random() - 0.5);
+        console.log(game_cards)
+        return game_cards;
+    }
 
-    function create_game(cards) {
-        const max_cards = cards;
-        const width = screen.offsetWidth / max_cards;
-        const height = screen.offsetHeight / max_cards;
-        const pos_x = screen.offsetWidth / 2 - (width * max_cards / 2);
-        const pos_y = screen.offsetHeight / 2 - (height * max_cards / 2);
+    
+    function create_game(grid) {
+        const all_cards = [];
+        const colum = grid.colum;
+        const row = grid.row;
+        const width = screen.offsetWidth / colum;
+        const height = screen.offsetHeight / row;
+        const pos_x = screen.offsetWidth / 2 - (width * colum / 2);
+        const pos_y = screen.offsetHeight / 2 - (height * row / 2);
         const background = "../factorio.jpg";
+        
+        const max_cards = colum * row;
+        const game_cards = set_card_pictures(max_cards / 2);
+        var idx = 0;
 
-        for (let x = 0; x < max_cards; x++) {
-            for (let y = 0; y < max_cards; y++) {
+        for (let x = 0; x < colum; x++) {
+            for (let y = 0; y < row; y++) {
+                
                 const card = create_card(
                     {
                         x: x,
                         y: y,
                         background: background,
+                        front: game_cards[idx],
                         width: width,
                         height: height,
                         pos_x: pos_x,
@@ -145,6 +129,7 @@ window.onload = function() {
                     }
                 );
                     
+                idx++;
                 all_cards[all_cards.length +1] = card;
                 screen.append(card); 
             };
