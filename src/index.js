@@ -6,8 +6,7 @@
 window.onload = function() {
     const screen = document.getElementById("screen");
     
-    const difficulty_container = document.createElement("div");
-    difficulty_container.id = "difficulty_container";
+    const difficulty_container = document.getElementById("difficulty_container");
     difficulty_container.style.width = screen.offsetWidth / 2 + "px";
     difficulty_container.style.height = screen.offsetHeight / 2 + "px"
     
@@ -15,8 +14,6 @@ window.onload = function() {
         difficulty_container.style.marginTop = screen.offsetHeight / 2 - difficulty_container.offsetHeight / 2  + "px";
         difficulty_container.style.marginLeft = screen.offsetWidth / 2 - difficulty_container.offsetWidth / 2 + "px";
     }, .1);
-    
-    screen.append(difficulty_container);
     
     const difficulty_childs = [];
     const difficulty = [
@@ -62,8 +59,10 @@ window.onload = function() {
         }, 1000);
     }
 
+    const game = document.getElementById("game");
+    var card_paar = [];
     
-    function create_card(data) {
+    function create_card(data, game) {
         const card = new Image();
         card.id = "card";
         card.src = data.background;
@@ -73,13 +72,69 @@ window.onload = function() {
         card.style.marginTop = data.pos_y + (data.height * data.y) + "px";
         
         card.onclick = function() {
-        card.style.transform = "rotateY(90deg)";
-        setTimeout(() => {card.style.transform = "rotateY(0deg)"}, 500);
-        setTimeout(() => {card.src = data.front}, 500);
+           flip_card(card, data.front);
+
+            setTimeout(() => {
+                check_card_paar(card, data, )      
+            }, 500);
+            
+        };
+        
+        return card;
+    };
+
+    function check_card_paar(card, data) {
+        card_paar.push(card);
+
+        if (card_paar.length >= 2) {
+            if (card_paar[0].src == card_paar[1].src) {
+                merge_cards(game);
+            } else {
+                setTimeout(() => {
+                    flip_cards_back(data);
+                }, 600)
+            }
+        };
+    };
+
+    function merge_cards() {
+        setTimeout(() => {
+            console.log(card_paar)
+            card_paar[1].style.marginLeft = card_paar[0].style.marginLeft;
+            card_paar[1].style.marginTop = card_paar[0].style.marginTop;
+
+            for (let i = 0; i < card_paar.length; i++) {
+                card_paar[i].style.transform = "rotateY(90deg)";
+                game.removeChild(card_paar[i]);
+            }
+
+            card_paar = [];
+
+            if(game.childNodes.length < 1) {
+                create_difficultys();
+            }
+        }, 500);
+
+        
+    };
+
+
+    function flip_cards_back(data) {    
+        for (let i = 0; i < card_paar.length; i++) {
+            flip_card(card_paar[i], data.background);
         };
 
-        return card;
-    }
+        card_paar = [];
+        console.log(card_paar);
+    };
+
+    function flip_card(card, src) {
+        card.style.transform = "rotateY(90deg)";
+        setTimeout(() => {
+            card.style.transform = "rotateY(0deg)"
+            card.src = src;
+        }, 500);
+    };
 
 
     function set_card_pictures(max_cards) {
@@ -94,13 +149,11 @@ window.onload = function() {
         };
 
         game_cards.sort(() => Math.random() - 0.5);
-        console.log(game_cards)
         return game_cards;
     }
 
     
     function create_game(grid) {
-        const all_cards = [];
         const colum = grid.colum;
         const row = grid.row;
         const width = screen.offsetWidth / colum;
@@ -126,14 +179,13 @@ window.onload = function() {
                         height: height,
                         pos_x: pos_x,
                         pos_y: pos_y,
-                    }
+                    },
                 );
                     
                 idx++;
-                all_cards[all_cards.length +1] = card;
-                screen.append(card); 
+                game.append(card); 
             };
-        };   
+        };
     };
 };
 
