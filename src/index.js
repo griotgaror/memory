@@ -99,10 +99,6 @@ window.onload = function() {
 
     function merge_cards() {
         setTimeout(() => {
-            console.log(card_paar)
-            card_paar[1].style.marginLeft = card_paar[0].style.marginLeft;
-            card_paar[1].style.marginTop = card_paar[0].style.marginTop;
-
             for (let i = 0; i < card_paar.length; i++) {
                 card_paar[i].style.transform = "rotateY(90deg)";
                 game.removeChild(card_paar[i]);
@@ -113,7 +109,7 @@ window.onload = function() {
             if(game.childNodes.length < 1) {
                 create_difficultys();
             }
-        }, 500);
+        }, 700);
 
         
     };
